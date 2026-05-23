@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { orderApi, statsApi } from "c:/Users/DELL/Downloads/expo-ecommerce-master/expo-ecommerce-master/admin/src/lib/api";
+import { orderApi, statsApi } from "../lib/api";
 import { DollarSignIcon, PackageIcon, ShoppingBagIcon, UsersIcon } from "lucide-react";
-import { capitalizeText, formatDate, getOrderStatusBadge } from "c:/Users/DELL/Downloads/expo-ecommerce-master/expo-ecommerce-master/admin/src/lib/utils";
+import { capitalizeText, formatDate, getOrderStatusBadge } from "../lib/utils";
 
 function DashboardPage() {
   const { data: ordersData, isLoading: ordersLoading } = useQuery({
