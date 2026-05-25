@@ -134,6 +134,7 @@ function ProductsPage() {
       <div className="grid grid-cols-1 gap-4">
         {products?.map((product) => {
           const status = getStockStatusBadge(product.stock);
+          const primaryImage = product.images?.[0];
 
           return (
             <div key={product._id} className="card bg-base-100 shadow-xl">
@@ -141,7 +142,13 @@ function ProductsPage() {
                 <div className="flex items-center gap-6">
                   <div className="avatar">
                     <div className="w-20 rounded-xl">
-                      <img src={product.images[0]} alt={product.name} />
+                      {primaryImage ? (
+                        <img src={primaryImage} alt={product.name} />
+                      ) : (
+                        <div className="flex h-20 w-20 items-center justify-center bg-base-200 text-xs text-base-content/60">
+                          No image
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -192,7 +199,7 @@ function ProductsPage() {
 
       {/* ADD/EDIT PRODUCT MODAL */}
 
-      <input type="checkbox" className="modal-toggle" checked={showModal} />
+      <input type="checkbox" className="modal-toggle" checked={showModal} readOnly />
 
       <div className="modal">
         <div className="modal-box max-w-2xl">
