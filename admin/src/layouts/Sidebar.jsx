@@ -6,6 +6,14 @@ import { NAVIGATION } from "./Navbar";
 function Sidebar() {
   const location = useLocation();
   const { user } = useUser();
+  const userInitials =
+    user?.fullName
+      ?.trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "A";
 
   return (
     <div className="drawer-side is-drawer-close:overflow-visible">
@@ -43,12 +51,18 @@ function Sidebar() {
         <div className="p-4 w-full">
           <div className="flex items-center gap-3">
             <div className="avatar shrink-0">
-              <img src={user?.imageUrl} alt={user?.name} className="w-10 h-10 rounded-full" />
+              {user?.imageUrl ? (
+                <img src={user.imageUrl} alt={user?.fullName || "Admin user"} className="w-10 h-10 rounded-full" />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-content font-bold">
+                  {userInitials}
+                </div>
+              )}
             </div>
 
             <div className="flex-1 min-w-0 is-drawer-close:hidden">
               <p className="text-sm font-semibold truncate">
-                {user?.firstName} {user?.lastName}
+                {user?.fullName || `${user?.firstName || "Admin"} ${user?.lastName || ""}`.trim()}
               </p>
 
               <p className="text-xs opacity-60 truncate">
