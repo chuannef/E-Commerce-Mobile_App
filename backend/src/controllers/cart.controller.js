@@ -33,7 +33,7 @@ export async function getCart(req, res) {
       });
     }
 
-    res.status(200).json({ cart });
+    await sendCart(res, 200, { cart });
   } catch (error) {
     console.error("Error in getCart controller:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -173,7 +173,7 @@ export const clearCart = async (req, res) => {
     cart.items = [];
     await cart.save();
 
-    res.status(200).json({ message: "Cart cleared", cart });
+    await sendCart(res, 200, { message: "Cart cleared", cart });
   } catch (error) {
     console.error("Error in clearCart controller:", error);
     res.status(500).json({ error: "Internal server error" });
