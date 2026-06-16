@@ -6,6 +6,11 @@ import { Order } from "../models/order.model.js";
 
 const stripe = new Stripe(ENV.STRIPE_SECRET_KEY);
 
+function parseOrderQuantity(value) {
+  const quantity = Number(value);
+  return Number.isInteger(quantity) && quantity >= 1 ? quantity : null;
+}
+
 export async function createPaymentIntent(req, res) {
   try {
     const { cartItems, shippingAddress } = req.body;
@@ -21,21 +26,26 @@ export async function createPaymentIntent(req, res) {
     const validatedItems = [];
 
     for (const item of cartItems) {
+      const quantity = parseOrderQuantity(item.quantity);
+      if (!quantity) {
+        return res.status(400).json({ error: "Item quantity must be a positive integer" });
+      }
+
       const product = await Product.findById(item.product._id);
       if (!product) {
         return res.status(404).json({ error: `Product ${item.product.name} not found` });
       }
 
-      if (product.stock < item.quantity) {
+      if (product.stock < quantity) {
         return res.status(400).json({ error: `Insufficient stock for ${product.name}` });
       }
 
-      subtotal += product.price * item.quantity;
+      subtotal += product.price * quantity;
       validatedItems.push({
         product: product._id.toString(),
         name: product.name,
         price: product.price,
-        quantity: item.quantity,
+        quantity,
         image: product.images[0],
       });
     }

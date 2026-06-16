@@ -2,6 +2,11 @@ import { Order } from "../models/order.model.js";
 import { Product } from "../models/product.model.js";
 import { Review } from "../models/review.model.js";
 
+function parseOrderQuantity(value) {
+  const quantity = Number(value);
+  return Number.isInteger(quantity) && quantity >= 1 ? quantity : null;
+}
+
 export async function createOrder(req, res) {
   try {
     const user = req.user;
@@ -13,13 +18,20 @@ export async function createOrder(req, res) {
 
     // validate products and stock
     for (const item of orderItems) {
+      const quantity = parseOrderQuantity(item.quantity);
+      if (!quantity) {
+        return res.status(400).json({ error: "Item quantity must be a positive integer" });
+      }
+
       const product = await Product.findById(item.product._id);
       if (!product) {
         return res.status(404).json({ error: `Product ${item.name} not found` });
       }
-      if (product.stock < item.quantity) {
+      if (product.stock < quantity) {
         return res.status(400).json({ error: `Insufficient stock for ${product.name}` });
       }
+
+      item.quantity = quantity;
     }
 
     const order = await Order.create({
